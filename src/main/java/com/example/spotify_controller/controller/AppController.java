@@ -77,17 +77,31 @@ public class AppController {
         return "Refreshed Auth";
     }
 
-    @GetMapping("/toggle-play")
+    @GetMapping("/play")
     @ResponseBody
     public String togglePlay() {
         appService.togglePlay();
         return "Toggled Play";
     }
 
-    @GetMapping("/toggle-pause")
+    @GetMapping("/pause")
     @ResponseBody
     public String togglePause() {
         appService.togglePause();
         return "Toggled Pause";
+    }
+
+    @GetMapping("/next-track")
+    @ResponseBody
+    public String nextTrack() {
+        appService.nextTrack();
+        return "Next Track";
+    }
+
+    @GetMapping("/previous-track")
+    @ResponseBody
+    public String previousTrack() {
+        appService.previousTrack();
+        return "Previous Track";
     }
 }

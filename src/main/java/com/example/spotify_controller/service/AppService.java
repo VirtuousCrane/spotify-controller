@@ -9,6 +9,8 @@ import se.michaelthelin.spotify.requests.authorization.authorization_code.Author
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import se.michaelthelin.spotify.requests.data.player.PauseUsersPlaybackRequest;
+import se.michaelthelin.spotify.requests.data.player.SkipUsersPlaybackToNextTrackRequest;
+import se.michaelthelin.spotify.requests.data.player.SkipUsersPlaybackToPreviousTrackRequest;
 import se.michaelthelin.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 
 import java.net.URI;
@@ -32,6 +34,8 @@ public class AppService {
     public static AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
     public static StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest;
     public static PauseUsersPlaybackRequest pauseUsersPlaybackRequest;
+    public static SkipUsersPlaybackToNextTrackRequest skipUsersPlaybackToNextTrackRequest;
+    public static SkipUsersPlaybackToPreviousTrackRequest skipUsersPlaybackToPreviousTrackRequest;
 
     public String getAuthUri() {
         final URI uri = authorizationCodeUriRequest.execute();
@@ -50,6 +54,22 @@ public class AppService {
 
     }
 
+    private void initializeRequests() {
+        startResumeUsersPlaybackRequest = spotifyAPI
+                .startResumeUsersPlayback()
+                .build();
+        pauseUsersPlaybackRequest = spotifyAPI
+                .pauseUsersPlayback()
+                .build();
+
+        skipUsersPlaybackToNextTrackRequest = spotifyAPI
+                .skipUsersPlaybackToNextTrack()
+                .build();
+        skipUsersPlaybackToPreviousTrackRequest = spotifyAPI
+                .skipUsersPlaybackToPreviousTrack()
+                .build();
+    }
+
     public void getAccessToken() {
         try{
             final AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
@@ -58,14 +78,8 @@ public class AppService {
             spotifyAPI.setAccessToken(authorizationCodeCredentials.getAccessToken());
             spotifyAPI.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
 
+            initializeRequests();
             System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
-
-            startResumeUsersPlaybackRequest = spotifyAPI
-                    .startResumeUsersPlayback()
-                    .build();
-            pauseUsersPlaybackRequest = spotifyAPI
-                    .pauseUsersPlayback()
-                    .build();
 
         } catch (Exception e) {
             // NOT YET IMPLEMENTED
@@ -76,13 +90,7 @@ public class AppService {
 
     public void initAccessToken(String accessToken) {
         spotifyAPI.setAccessToken(accessToken);
-
-        startResumeUsersPlaybackRequest = spotifyAPI
-                .startResumeUsersPlayback()
-                .build();
-        pauseUsersPlaybackRequest = spotifyAPI
-                .pauseUsersPlayback()
-                .build();
+        initializeRequests();
     }
 
     public void refreshCode() {
@@ -116,7 +124,25 @@ public class AppService {
             System.out.println("Null: " + string);
         } catch (Exception e) {
             System.out.println("Toggle Pause Error");
-            System.out.println("Toggle Pause Error");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void nextTrack() {
+        try {
+            skipUsersPlaybackToNextTrackRequest.execute();
+        } catch (Exception e) {
+            System.out.println("Next Track Error");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void previousTrack() {
+        try {
+            skipUsersPlaybackToPreviousTrackRequest.execute();
+        } catch (Exception e) {
+            System.out.println("Previous Track Error");
+            System.out.println(e.getMessage());
         }
     }
 }
